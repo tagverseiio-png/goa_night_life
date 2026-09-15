@@ -1,0 +1,152 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../apps/api/node_modules/@prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String
+  roleId        String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  role          Role      @relation(fields: [roleId], references: [id])
+  profile       CustomerProfile?
+  auditLogs     AuditLog[]
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g., ADMIN, CASHIER, CUSTOMER
+  permissions String     // Stored as a JSON string of permission strings
+  users       User[]
+}
+
+model CustomerProfile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  name           String
+  phone          String?
+  preferences    String?
+  totalSpend     Float    @default(0)
+  visitCount     Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reservations   Reservation[]
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  userId        String
+  action        String
+  resource      String
+  resourceId    String?
+  previousValue String?
+  newValue      String?
+  timestamp     DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+// ==========================================
+// PHASE 2: RESERVATIONS, TABLES & POS
+// ==========================================
+
+model Table {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  capacity      Int
+  status        String    @default("AVAILABLE") // AVAILABLE, RESERVED, OCCUPIED, PAID, CLOSED
+
+  reservations  Reservation[]
+  sessions      TableSession[]
+}
+
+model Reservation {
+  id              String    @id @default(uuid())
+  customerId      String
+  tableId         String
+  date            DateTime
+  partySize       Int
+  status          String    @default("PENDING") // PENDING, CONFIRMED, CHECKED_IN, CANCELLED
+  deposit         Float     @default(0)
+  paymentStatus   String    @default("PENDING")
+  specialRequests String?
+  promoterId      String?
+  createdAt       DateTime  @default(now())
+
+  customer        CustomerProfile @relation(fields: [customerId], references: [id])
+  table           Table           @relation(fields: [tableId], references: [id])
+  sessions        TableSession[]
+}
+
+model TableSession {
+  id              String    @id @default(uuid())
+  tableId         String
+  reservationId   String?
+  status          String    @default("ACTIVE") // ACTIVE, CLOSED
+  openedAt        DateTime  @default(now())
+  closedAt        DateTime?
+
+  table           Table        @relation(fields: [tableId], references: [id])
+  reservation     Reservation? @relation(fields: [reservationId], references: [id])
+  orders          Order[]
+  payments        PaymentTransaction[]
+}
+
+model Product {
+  id            String    @id @default(uuid())
+  name          String
+  category      String
+  price         Float
+  isBottle      Boolean   @default(false)
+  size          String?
+
+  orderItems    OrderItem[]
+}
+
+model Order {
+  id            String    @id @default(uuid())
+  sessionId     String
+  status        String    @default("DRAFT") // DRAFT, CONFIRMED, PREPARING, SERVED, COMPLETED, VOIDED
+  totalAmount   Float     @default(0)
+  discountAmount Float    @default(0)
+  finalAmount   Float     @default(0)
+  createdAt     DateTime  @default(now())
+
+  session       TableSession  @relation(fields: [sessionId], references: [id])
+  items         OrderItem[]
+}
+
+model OrderItem {
+  id              String    @id @default(uuid())
+  orderId         String
+  productId       String
+  quantity        Int
+  price           Float
+  isComplimentary Boolean   @default(false)
+  voidReason      String?
+
+  order           Order     @relation(fields: [orderId], references: [id])
+  product         Product   @relation(fields: [productId], references: [id])
+}
+
+model PaymentTransaction {
+  id            String    @id @default(uuid())
+  sessionId     String
+  amount        Float
+  type          String    // PAYMENT, REFUND, DEPOSIT
+  method        String    // CASH, CARD, TAB
+  status        String    @default("PENDING") // PENDING, COMPLETED, FAILED
+  timestamp     DateTime  @default(now())
+
+  session       TableSession @relation(fields: [sessionId], references: [id])
+}
