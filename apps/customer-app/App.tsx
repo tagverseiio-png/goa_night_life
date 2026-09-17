@@ -1208,7 +1208,7 @@ export default function App() {
           <div style={{ flex: 1, padding: '32px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ textAlign: 'center', margin: '0 0 40px 0', animation: 'fadeIn 0.8s ease-out' }}>
               <h1 style={{ fontFamily: "'Pacifico', cursive", fontSize: '48px', fontWeight: '400', letterSpacing: '8px', color: TOKENS.accent, margin: '0 0 8px 0' }}>GOA</h1>
-              <p style={{ color: TOKENS.textSecondary, fontSize: '12px', letterSpacing: '2px', margin: 0 }}>CUSTOMER PORTAL</p>
+              <p style={{ color: TOKENS.textSecondary, fontSize: '12px', letterSpacing: '2px', margin: 0 }}>NIGHTCLUB</p>
             </div>
             
             <form onSubmit={(e) => { e.preventDefault(); setIsAuthenticated(true); }} style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.4s ease-out' }}>
