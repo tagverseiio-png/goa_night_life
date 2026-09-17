@@ -641,7 +641,7 @@ const HomeScreen = ({ nightModeActive, setNightModeActive, showToast, setActiveT
         <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
           <div style={{ width: '32px' }} />
           <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
-            <h1 style={{ fontSize: '18px', fontWeight: '600', color: TOKENS.textPrimary, margin: 0, letterSpacing: '1px' }}>GOA</h1>
+            <h1 style={{ fontFamily: "'Pacifico', cursive", fontSize: '22px', fontWeight: '400', color: TOKENS.textPrimary, margin: 0, letterSpacing: '1px' }}>GOA</h1>
             <ChevronRight size={14} color={TOKENS.textPrimary} style={{ transform: 'rotate(90deg)' }} />
           </div>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
@@ -1060,6 +1060,7 @@ export default function App() {
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
           
           .theme-dark {
             --color-bg: #0A0A0F;
@@ -1205,7 +1206,7 @@ export default function App() {
         {!isAuthenticated ? (
           <div style={{ flex: 1, padding: '32px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ textAlign: 'center', margin: '0 0 48px 0', animation: 'fadeIn 0.8s ease-out' }}>
-              <h1 style={{ fontSize: '42px', fontWeight: '300', letterSpacing: '8px', color: TOKENS.accent, margin: '0 0 12px 0' }}>GOA</h1>
+              <h1 style={{ fontFamily: "'Pacifico', cursive", fontSize: '48px', fontWeight: '400', letterSpacing: '8px', color: TOKENS.accent, margin: '0 0 12px 0' }}>GOA</h1>
               <p style={{ color: TOKENS.textSecondary, fontSize: '12px', letterSpacing: '2px', margin: 0 }}>CUSTOMER PORTAL</p>
             </div>
             
