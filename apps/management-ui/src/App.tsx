@@ -116,18 +116,18 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <aside className="sidebar">
+    <div className="app-container flex flex-col md:flex-row">
+      <aside className="sidebar w-full md:w-[260px] md:h-screen md:sticky md:top-0 border-b md:border-b-0 md:border-r">
         <div style={{ marginBottom: 'var(--space-8)' }}>
           <h2 style={{ letterSpacing: '0.1em', textTransform: 'uppercase' }}>GOA</h2>
           <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}>ADMINISTRATOR</span>
         </div>
         
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+        <nav className="flex flex-row md:flex-col gap-2 overflow-x-auto pb-4 md:pb-0 hide-scrollbar" style={{ flexWrap: 'nowrap' }}>
           {['Dashboard', 'Tables', 'Reservations', 'POS & Tables', 'Inventory', 'Customers'].map((item) => (
             <button 
               key={item} 
-              className="btn" 
+              className="btn whitespace-nowrap" 
               style={{ 
                 justifyContent: 'flex-start', 
                 backgroundColor: activeTab === item ? 'var(--bg-card)' : 'transparent', 
@@ -140,7 +140,7 @@ function App() {
           ))}
         </nav>
 
-        <div style={{ marginTop: 'auto' }}>
+        <div className="hidden md:block mt-auto">
           <button 
             className="btn" 
             style={{ width: '100%', justifyContent: 'flex-start', backgroundColor: 'transparent', color: 'var(--accent-red)' }}
@@ -152,25 +152,7 @@ function App() {
       </aside>
 
       <main className="main-content">
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-8)' }}>
-          <h1>Today's Overview</h1>
-          <div style={{ color: 'var(--text-secondary)' }}>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
-        </header>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-6)' }}>
-          <div className="card">
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--space-2)' }}>Total Revenue</div>
-            <h2>S$ 0.00</h2>
-          </div>
-          <div className="card">
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--space-2)' }}>Occupied Tables</div>
-            <h2>0 / 45</h2>
-          </div>
-          <div className="card">
-            <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: 'var(--space-2)' }}>Expected Arrivals</div>
-            <h2>12</h2>
-          </div>
-        </div>
+        {renderContent()}
       </main>
     </div>
   );

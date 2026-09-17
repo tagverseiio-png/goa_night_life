@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './global.css';
 import { Home, CalendarDays, User, Wine, Trophy, Bell, ScanLine, Music, Users, Search, ChevronRight, Star, Plus, Camera, Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, X, CheckCircle2 } from 'lucide-react';
 
 const TOKENS = {
@@ -1054,17 +1055,10 @@ export default function App() {
       </style>
       
       {/* Mobile Device Frame */}
-      <div style={{
-        width: '390px',
-        height: '844px',
-        backgroundColor: TOKENS.bg,
-        borderRadius: '40px',
-        overflow: 'hidden',
-        position: 'relative',
-        boxShadow: '0 24px 80px rgba(0,0,0,0.8), 0 0 0 12px #1A1A24',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
+      <div 
+        className="w-full h-[100dvh] sm:w-[390px] sm:h-[844px] sm:rounded-[40px] sm:shadow-[0_24px_80px_rgba(0,0,0,0.8),_0_0_0_12px_#1A1A24] overflow-hidden relative flex flex-col"
+        style={{ backgroundColor: TOKENS.bg }}
+      >
         
         {/* Hardware Notch/Island (Cosmetic) */}
         <div style={{
