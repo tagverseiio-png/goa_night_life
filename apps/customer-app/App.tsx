@@ -1022,7 +1022,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center font-['Inter',sans-serif] p-0 sm:p-10">
+    <div className="app-wrapper font-['Inter',sans-serif]">
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
@@ -1043,17 +1043,65 @@ export default function App() {
             from { opacity: 0; transform: translate(-50%, 20px); }
             to { opacity: 1; transform: translate(-50%, 0); }
           }
+
+          /* --- Guaranteed Mobile Responsiveness --- */
+          .app-wrapper {
+            min-height: 100vh;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+          }
+          .device-frame {
+            width: 390px;
+            height: 844px;
+            border-radius: 40px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.8), 0 0 0 12px #1A1A24;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+          }
+          .notch {
+            display: block;
+          }
+          .status-bar-space {
+            height: 54px;
+            flex-shrink: 0;
+          }
+
+          /* Mobile Breakpoint overrides */
+          @media (max-width: 640px) {
+            .app-wrapper {
+              padding: 0;
+              align-items: stretch;
+            }
+            .device-frame {
+              width: 100vw !important;
+              height: 100dvh !important;
+              max-width: 100vw;
+              border-radius: 0;
+              box-shadow: none;
+            }
+            .notch {
+              display: none !important;
+            }
+            .status-bar-space {
+              height: 16px !important;
+            }
+          }
         `}
       </style>
       
       {/* Mobile Device Frame */}
       <div 
-        className="w-full h-[100dvh] sm:w-[390px] sm:h-[844px] sm:rounded-[40px] sm:shadow-[0_24px_80px_rgba(0,0,0,0.8),_0_0_0_12px_#1A1A24] overflow-hidden relative flex flex-col"
+        className="device-frame"
         style={{ backgroundColor: TOKENS.bg }}
       >
         
-        {/* Hardware Notch/Island (Cosmetic) - Hidden on mobile */}
-        <div className="hidden sm:block" style={{
+        {/* Hardware Notch/Island (Cosmetic) */}
+        <div className="notch" style={{
           position: 'absolute',
           top: '12px',
           left: '50%',
@@ -1091,8 +1139,8 @@ export default function App() {
           </div>
         )}
 
-        {/* Status Bar Space - Reduced on mobile */}
-        <div className="h-4 sm:h-[54px] shrink-0" />
+        {/* Status Bar Space */}
+        <div className="status-bar-space" />
 
         {/* Main Content Area */}
         {renderScreen()}
