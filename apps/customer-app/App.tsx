@@ -586,7 +586,7 @@ const SocialScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
   );
 };
 
-const HomeScreen = ({ nightModeActive, setNightModeActive, showToast }: { nightModeActive: boolean, setNightModeActive: (active: boolean) => void, showToast: (msg: string) => void }) => {
+const HomeScreen = ({ nightModeActive, setNightModeActive, showToast, setActiveTab }: { nightModeActive: boolean, setNightModeActive: (active: boolean) => void, showToast: (msg: string) => void, setActiveTab: (tab: string) => void }) => {
   const [showQR, setShowQR] = useState(false);
 
   if (nightModeActive) {
@@ -638,16 +638,17 @@ const HomeScreen = ({ nightModeActive, setNightModeActive, showToast }: { nightM
   return (
     <div style={{ flex: 1, position: 'relative' }}>
       <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '24px', height: '100%' }}>
-        <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ fontSize: '24px', fontWeight: '300', color: TOKENS.textPrimary, letterSpacing: '4px', margin: 0 }}>GOA</h1>
+        <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
+          <div style={{ width: '32px' }} />
+          <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+            <h1 style={{ fontSize: '18px', fontWeight: '600', color: TOKENS.textPrimary, margin: 0, letterSpacing: '1px' }}>GOA</h1>
+            <ChevronRight size={14} color={TOKENS.textPrimary} style={{ transform: 'rotate(90deg)' }} />
+          </div>
           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <button onClick={() => setNightModeActive(true)} style={{ background: 'none', border: `1px solid ${TOKENS.border}`, borderRadius: '20px', padding: '6px 12px', color: TOKENS.textSecondary, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              Night Mode <ChevronRight size={12} />
-            </button>
             <button onClick={() => showToast("No new notifications")} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
               <Bell color={TOKENS.textPrimary} size={24} />
             </button>
-            <div onClick={() => showToast("Profile settings opened")} style={{ width: '32px', height: '32px', borderRadius: '16px', overflow: 'hidden', border: `1px solid ${TOKENS.accent}`, cursor: 'pointer' }}>
+            <div onClick={() => setActiveTab('mygoa')} style={{ width: '32px', height: '32px', borderRadius: '16px', overflow: 'hidden', border: `1px solid ${TOKENS.accent}`, cursor: 'pointer' }}>
               <img src="/logo.jpeg" alt="GOA Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
           </div>
@@ -1044,13 +1045,13 @@ export default function App() {
 
   const renderScreen = () => {
     switch (activeTab) {
-      case 'home': return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} showToast={showToast} />;
+      case 'home': return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} showToast={showToast} setActiveTab={setActiveTab} />;
       case 'reserve': return <ReserveScreen showToast={showToast} />;
       case 'social': return <SocialScreen showToast={showToast} />;
       case 'mygoa': return <MyGoaScreen showToast={showToast} isLightMode={isLightMode} setIsLightMode={setIsLightMode} />;
       case 'wallet': return <BottleWalletScreen showToast={showToast} />;
       case 'rewards': return <RewardsScreen showToast={showToast} />;
-      default: return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} showToast={showToast} />;
+      default: return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} showToast={showToast} setActiveTab={setActiveTab} />;
     }
   };
 
