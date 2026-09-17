@@ -1040,8 +1040,8 @@ export default function App() {
     { id: 'home', icon: Home, label: 'Home' },
     { id: 'reserve', icon: CalendarDays, label: 'Reserve' },
     { id: 'social', icon: Users, label: 'Social' },
-    { id: 'mygoa', icon: User, label: 'My GOA' },
-    { id: 'wallet', icon: Wine, label: 'Wallet' }
+    { id: 'wallet', icon: Wine, label: 'Wallet' },
+    { id: 'mygoa', icon: User, label: 'My Account' }
   ];
 
   const renderScreen = () => {
