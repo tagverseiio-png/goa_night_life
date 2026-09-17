@@ -1107,14 +1107,41 @@ export default function App() {
           }
 
           /* --- Guaranteed Mobile Responsiveness --- */
+
+          /* 1. Root sizing — ensure no inherited max-width causes side gaps */
+          html {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+          }
+          body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+          }
+          #root {
+            width: 100%;
+            max-width: 100%;
+          }
+
+          /* 2. App wrapper — desktop: centered phone frame */
           .app-wrapper {
+            width: 100vw;
+            width: 100dvw;
             min-height: 100vh;
+            min-height: 100dvh;
             background-color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 40px;
+            box-sizing: border-box;
+            overflow-x: hidden;
           }
+
+          /* 3. Device frame — desktop: phone bezel simulation */
           .device-frame {
             width: 390px;
             height: 844px;
@@ -1124,6 +1151,7 @@ export default function App() {
             position: relative;
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
           }
           .notch {
             display: block;
@@ -1133,35 +1161,39 @@ export default function App() {
             flex-shrink: 0;
           }
 
-          /* Mobile Breakpoint overrides */
+          /* 4. Mobile breakpoint — fill entire viewport, no gaps */
           @media (max-width: 640px) {
-            body {
-              margin: 0;
-              padding: 0;
+            html, body {
+              overflow-x: hidden;
             }
             .app-wrapper {
               padding: 0;
               width: 100%;
+              max-width: 100%;
               min-width: 0;
-              max-width: none;
-              overflow-x: hidden;
-              position: relative;
-              margin: 0 auto;
+              min-height: 100vh;
+              min-height: 100dvh;
+              align-items: stretch;
+              justify-content: flex-start;
+              margin: 0;
             }
             .device-frame {
               width: 100% !important;
-              max-width: none !important;
+              max-width: 100% !important;
+              min-width: 0 !important;
+              height: 100vh !important;
               height: 100dvh !important;
-              border-radius: 0;
-              box-shadow: none;
+              border-radius: 0 !important;
+              box-shadow: none !important;
               overflow-x: hidden;
               box-sizing: border-box;
+              flex-shrink: 1;
             }
             .notch {
               display: none !important;
             }
             .status-bar-space {
-              height: 16px !important;
+              height: env(safe-area-inset-top, 16px) !important;
             }
           }
         `}
@@ -1272,18 +1304,21 @@ export default function App() {
 
             {/* Bottom Navigation */}
             <div style={{
-              position: 'absolute',
+              position: 'fixed',
               bottom: 0,
               left: 0,
               right: 0,
-              height: 'calc(64px + env(safe-area-inset-bottom, 20px))',
-              paddingBottom: 'env(safe-area-inset-bottom, 20px)',
+              width: '100%',
+              paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 12px)',
+              paddingTop: '4px',
               backgroundColor: TOKENS.surface,
               borderTop: `1px solid ${TOKENS.border}`,
               display: 'flex',
               justifyContent: 'space-around',
               alignItems: 'center',
-              zIndex: 40
+              zIndex: 100,
+              boxSizing: 'border-box',
+              minHeight: '56px',
             }}>
               {TABS.map(tab => {
                 const Icon = tab.icon;
