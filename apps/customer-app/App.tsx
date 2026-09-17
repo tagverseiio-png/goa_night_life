@@ -567,7 +567,7 @@ const SocialScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
              ))}
           </div>
 
-          <div style={{ padding: '16px 24px', borderTop: `1px solid ${TOKENS.border}`, display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: TOKENS.surface }}>
+          <div style={{ padding: '16px 24px calc(16px + env(safe-area-inset-bottom, 0px)) 24px', borderTop: `1px solid ${TOKENS.border}`, display: 'flex', gap: '12px', alignItems: 'center', backgroundColor: TOKENS.surface }}>
              <Avatar initials={DATA.user.name.substring(0,2).toUpperCase()} size={28} />
              <input 
                type="text" 

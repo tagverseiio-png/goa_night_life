@@ -13,6 +13,8 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('Dashboard');
 
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   if (!isAuthenticated) {
     return (
       <div className="auth-container">
@@ -116,14 +118,44 @@ function App() {
   };
 
   return (
-    <div className="app-container flex flex-col md:flex-row">
-      <aside className="sidebar w-full md:w-[260px] md:h-screen md:sticky md:top-0 border-b md:border-b-0 md:border-r">
-        <div style={{ marginBottom: 'var(--space-8)' }}>
-          <h2 style={{ letterSpacing: '0.1em', textTransform: 'uppercase' }}>GOA</h2>
-          <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}>ADMINISTRATOR</span>
+    <div className="app-container flex flex-col md:flex-row relative min-h-screen">
+      {/* Mobile Header */}
+      <div className="md:hidden flex justify-between items-center p-4 border-b border-[var(--border-color)] bg-[var(--bg-sidebar)]">
+        <h2 style={{ letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>GOA</h2>
+        <button className="p-2" onClick={() => setIsDrawerOpen(true)}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      {isDrawerOpen && (
+        <div 
+          className="md:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm transition-opacity"
+          onClick={() => setIsDrawerOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        sidebar w-[280px] md:w-[260px] 
+        h-full md:h-screen md:sticky md:top-0 
+        border-r border-[var(--border-color)]
+        fixed md:relative z-50
+        top-0 left-0
+        transform transition-transform duration-300 ease-in-out
+        ${isDrawerOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
+        <div className="flex justify-between items-center" style={{ marginBottom: 'var(--space-8)' }}>
+          <div>
+            <h2 style={{ letterSpacing: '0.1em', textTransform: 'uppercase', margin: 0 }}>GOA</h2>
+            <span style={{ fontSize: '0.75rem', color: 'var(--accent-gold)' }}>ADMINISTRATOR</span>
+          </div>
+          <button className="md:hidden p-2 text-[var(--text-secondary)]" onClick={() => setIsDrawerOpen(false)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
         </div>
         
-        <nav className="flex flex-row md:flex-col gap-2 overflow-x-auto pb-4 md:pb-0 hide-scrollbar" style={{ flexWrap: 'nowrap' }}>
+        <nav className="flex flex-col gap-2 overflow-y-auto pb-4 hide-scrollbar">
           {['Dashboard', 'Tables', 'Reservations', 'POS & Tables', 'Inventory', 'Customers'].map((item) => (
             <button 
               key={item} 
@@ -133,14 +165,17 @@ function App() {
                 backgroundColor: activeTab === item ? 'var(--bg-card)' : 'transparent', 
                 color: activeTab === item ? 'var(--accent-gold)' : 'var(--text-secondary)' 
               }}
-              onClick={() => setActiveTab(item)}
+              onClick={() => {
+                setActiveTab(item);
+                setIsDrawerOpen(false);
+              }}
             >
               {item}
             </button>
           ))}
         </nav>
 
-        <div className="hidden md:block mt-auto">
+        <div className="md:block mt-auto pt-4 border-t border-[var(--border-color)]">
           <button 
             className="btn" 
             style={{ width: '100%', justifyContent: 'flex-start', backgroundColor: 'transparent', color: 'var(--accent-red)' }}
