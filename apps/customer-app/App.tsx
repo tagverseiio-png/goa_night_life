@@ -987,6 +987,7 @@ const RewardsScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
 // --- Main App & Shell ---
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [nightModeActive, setNightModeActive] = useState(false);
   
@@ -1142,46 +1143,73 @@ export default function App() {
         {/* Status Bar Space */}
         <div className="status-bar-space" />
 
-        {/* Main Content Area */}
-        {renderScreen()}
-
-        {/* Bottom Navigation */}
-        <div style={{
-          height: '84px',
-          backgroundColor: TOKENS.surface,
-          borderTop: `1px solid ${TOKENS.border}`,
-          display: 'flex',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          paddingBottom: '20px',
-          flexShrink: 0,
-          zIndex: 40
-        }}>
-          {TABS.map(tab => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button 
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '4px',
-                  cursor: 'pointer',
-                  color: isActive ? TOKENS.accent : TOKENS.textSecondary,
-                  width: '56px'
-                }}
-              >
-                <Icon size={22} strokeWidth={isActive ? 2.5 : 2} fill={isActive ? TOKENS.accentGlow : 'none'} />
-                <span style={{ fontSize: '9px', fontWeight: isActive ? '500' : '400' }}>{tab.label}</span>
+        {!isAuthenticated ? (
+          <div style={{ flex: 1, padding: '32px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ textAlign: 'center', margin: '0 0 48px 0', animation: 'fadeIn 0.8s ease-out' }}>
+              <h1 style={{ fontSize: '42px', fontWeight: '300', letterSpacing: '8px', color: TOKENS.accent, margin: '0 0 12px 0' }}>GOA</h1>
+              <p style={{ color: TOKENS.textSecondary, fontSize: '12px', letterSpacing: '2px', margin: 0 }}>CUSTOMER PORTAL</p>
+            </div>
+            
+            <form onSubmit={(e) => { e.preventDefault(); setIsAuthenticated(true); }} style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 1s ease-out' }}>
+              <div>
+                <label style={{ display: 'block', color: TOKENS.textSecondary, fontSize: '11px', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL OR GOA ID</label>
+                <input type="text" placeholder="name@example.com" style={{ width: '100%', padding: '16px', backgroundColor: TOKENS.surfaceHigh, border: `1px solid ${TOKENS.border}`, borderRadius: '12px', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none', fontFamily: 'inherit' }} />
+              </div>
+              
+              <div>
+                <label style={{ display: 'block', color: TOKENS.textSecondary, fontSize: '11px', marginBottom: '8px', letterSpacing: '1px' }}>PASSWORD</label>
+                <input type="password" placeholder="••••••••" style={{ width: '100%', padding: '16px', backgroundColor: TOKENS.surfaceHigh, border: `1px solid ${TOKENS.border}`, borderRadius: '12px', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none', fontFamily: 'inherit' }} />
+              </div>
+              
+              <button type="submit" style={{ marginTop: '16px', backgroundColor: TOKENS.accent, color: '#000', padding: '16px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                Sign In <ChevronRight size={18} />
               </button>
-            )
-          })}
-        </div>
+            </form>
+          </div>
+        ) : (
+          <>
+            {/* Main Content Area */}
+            {renderScreen()}
+
+            {/* Bottom Navigation */}
+            <div style={{
+              height: '84px',
+              backgroundColor: TOKENS.surface,
+              borderTop: `1px solid ${TOKENS.border}`,
+              display: 'flex',
+              justifyContent: 'space-around',
+              alignItems: 'center',
+              paddingBottom: '20px',
+              flexShrink: 0,
+              zIndex: 40
+            }}>
+              {TABS.map(tab => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button 
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '4px',
+                      cursor: 'pointer',
+                      color: isActive ? TOKENS.accent : TOKENS.textSecondary,
+                      width: '56px'
+                    }}
+                  >
+                    <Icon size={22} strokeWidth={isActive ? 2.5 : 2} fill={isActive ? TOKENS.accentGlow : 'none'} />
+                    <span style={{ fontSize: '9px', fontWeight: isActive ? '500' : '400' }}>{tab.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
