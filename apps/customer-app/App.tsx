@@ -57,6 +57,7 @@ const DATA = {
       caption: "Nothing hits like a Saturday at GOA 🥃🔥 Table 8 was unreal tonight.",
       filter: "GOLDEN HOUR",
       likes: 248,
+      image: "https://loremflickr.com/800/600/nightclub,crowd",
       comments: [
         { user: "Karan M.", initials: "KM", text: "Agreed 🔥 see you next week", time: "1h ago", likes: 12 },
         { user: "Dev R.", initials: "DR", text: "Table 8 gang 🙌", time: "45m ago", likes: 4 }
@@ -73,6 +74,7 @@ const DATA = {
       caption: "DJ KSHMR absolutely destroyed it. Requesting the same set every week 🎧",
       filter: "DJ MODE",
       likes: 412,
+      image: "https://loremflickr.com/800/600/dj,concert",
       comments: [
         { user: "Priya S.", initials: "PS", text: "That drop at 1am 😭", time: "3h ago", likes: 28 }
       ],
@@ -88,10 +90,41 @@ const DATA = {
       caption: "Bottle drop for the crew 🍾 See you next Saturday.",
       filter: "BOTTLE DROP",
       likes: 189,
+      image: "https://loremflickr.com/800/600/champagne,bottle",
       comments: [
         { user: "Rahul K.", initials: "RK", text: "Carry me next time 😂", time: "5h ago", likes: 7 }
       ],
       liked: false,
+      saved: false
+    },
+    {
+      id: 4,
+      user: "Arjun R.",
+      initials: "AR",
+      tier: "INSIDER",
+      time: "8h ago",
+      caption: "Trying out the new signature cocktails at the bar. 🍸 Absolutely phenomenal.",
+      filter: "NIGHT MODE",
+      likes: 134,
+      image: "https://loremflickr.com/800/600/bar,cocktail",
+      comments: [],
+      liked: false,
+      saved: true
+    },
+    {
+      id: 5,
+      user: "Nikhil T.",
+      initials: "NT",
+      tier: "VIP",
+      time: "Yesterday",
+      caption: "GOA never disappoints. The energy here is unmatched.",
+      filter: "GOA MEMORIES",
+      likes: 520,
+      image: "https://loremflickr.com/800/600/party,friends",
+      comments: [
+        { user: "Meera R.", initials: "MR", text: "Best night ever!", time: "12h ago", likes: 18 }
+      ],
+      liked: true,
       saved: false
     }
   ]
@@ -332,6 +365,9 @@ const SocialScreen = () => {
 
               {/* Media Block */}
               <div style={{ width: '100%', aspectRatio: '4/3', backgroundColor: TOKENS.surfaceHigh, position: 'relative', overflow: 'hidden' }}>
+                {/* Background Image */}
+                <img src={post.image} alt="Post Media" style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }} />
+                
                 {/* CSS Filter Overlay */}
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, ...getFilterStyles(post.filter) }}>
                   {renderFilterWatermark(post.filter, post.tier)}
@@ -583,11 +619,14 @@ const HomeScreen = ({ nightModeActive, setNightModeActive }: { nightModeActive: 
     <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '24px' }}>
       <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 style={{ fontSize: '24px', fontWeight: '300', color: TOKENS.textPrimary, letterSpacing: '4px', margin: 0 }}>GOA</h1>
-        <div style={{ display: 'flex', gap: '16px' }}>
+        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <button onClick={() => setNightModeActive(true)} style={{ background: 'none', border: `1px solid ${TOKENS.border}`, borderRadius: '20px', padding: '6px 12px', color: TOKENS.textSecondary, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
             Night Mode <ChevronRight size={12} />
           </button>
           <Bell color={TOKENS.textPrimary} size={24} />
+          <div style={{ width: '32px', height: '32px', borderRadius: '16px', overflow: 'hidden', border: `1px solid ${TOKENS.accent}` }}>
+            <img src="/logo.jpeg" alt="GOA Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
         </div>
       </div>
 
