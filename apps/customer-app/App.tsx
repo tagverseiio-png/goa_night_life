@@ -1021,6 +1021,7 @@ const RewardsScreen = ({ showToast, embedded }: { showToast: (msg: string) => vo
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [nightModeActive, setNightModeActive] = useState(false);
   const [isLightMode, setIsLightMode] = useState(false);
@@ -1205,26 +1206,53 @@ export default function App() {
 
         {!isAuthenticated ? (
           <div style={{ flex: 1, padding: '32px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <div style={{ textAlign: 'center', margin: '0 0 48px 0', animation: 'fadeIn 0.8s ease-out' }}>
-              <h1 style={{ fontFamily: "'Pacifico', cursive", fontSize: '48px', fontWeight: '400', letterSpacing: '8px', color: TOKENS.accent, margin: '0 0 12px 0' }}>GOA</h1>
+            <div style={{ textAlign: 'center', margin: '0 0 40px 0', animation: 'fadeIn 0.8s ease-out' }}>
+              <h1 style={{ fontFamily: "'Pacifico', cursive", fontSize: '48px', fontWeight: '400', letterSpacing: '8px', color: TOKENS.accent, margin: '0 0 8px 0' }}>GOA</h1>
               <p style={{ color: TOKENS.textSecondary, fontSize: '12px', letterSpacing: '2px', margin: 0 }}>CUSTOMER PORTAL</p>
             </div>
             
-            <form onSubmit={(e) => { e.preventDefault(); setIsAuthenticated(true); }} style={{ display: 'flex', flexDirection: 'column', gap: '20px', animation: 'fadeIn 1s ease-out' }}>
+            <form onSubmit={(e) => { e.preventDefault(); setIsAuthenticated(true); }} style={{ display: 'flex', flexDirection: 'column', gap: '12px', animation: 'fadeIn 0.4s ease-out' }}>
+              {isSignUp && (
+                <>
+                  <div>
+                    <input type="text" placeholder="Full Name" required style={{ width: '100%', padding: '14px 16px', backgroundColor: TOKENS.surfaceHigh, border: `1px solid ${TOKENS.border}`, borderRadius: '6px', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none', fontFamily: 'inherit' }} />
+                  </div>
+                  <div>
+                    <input type="text" placeholder="Username" required style={{ width: '100%', padding: '14px 16px', backgroundColor: TOKENS.surfaceHigh, border: `1px solid ${TOKENS.border}`, borderRadius: '6px', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none', fontFamily: 'inherit' }} />
+                  </div>
+                </>
+              )}
+              
               <div>
-                <label style={{ display: 'block', color: TOKENS.textSecondary, fontSize: '11px', marginBottom: '8px', letterSpacing: '1px' }}>EMAIL OR GOA ID</label>
-                <input type="text" placeholder="name@example.com" style={{ width: '100%', padding: '16px', backgroundColor: TOKENS.surfaceHigh, border: `1px solid ${TOKENS.border}`, borderRadius: '12px', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none', fontFamily: 'inherit' }} />
+                <input type="text" placeholder={isSignUp ? "Email" : "Email or Username"} required style={{ width: '100%', padding: '14px 16px', backgroundColor: TOKENS.surfaceHigh, border: `1px solid ${TOKENS.border}`, borderRadius: '6px', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none', fontFamily: 'inherit' }} />
               </div>
               
               <div>
-                <label style={{ display: 'block', color: TOKENS.textSecondary, fontSize: '11px', marginBottom: '8px', letterSpacing: '1px' }}>PASSWORD</label>
-                <input type="password" placeholder="••••••••" style={{ width: '100%', padding: '16px', backgroundColor: TOKENS.surfaceHigh, border: `1px solid ${TOKENS.border}`, borderRadius: '12px', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none', fontFamily: 'inherit' }} />
+                <input type="password" placeholder="Password" required style={{ width: '100%', padding: '14px 16px', backgroundColor: TOKENS.surfaceHigh, border: `1px solid ${TOKENS.border}`, borderRadius: '6px', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none', fontFamily: 'inherit' }} />
               </div>
+
+              {isSignUp && (
+                <div>
+                  <input type="password" placeholder="Confirm Password" required style={{ width: '100%', padding: '14px 16px', backgroundColor: TOKENS.surfaceHigh, border: `1px solid ${TOKENS.border}`, borderRadius: '6px', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none', fontFamily: 'inherit' }} />
+                </div>
+              )}
               
-              <button type="submit" style={{ marginTop: '16px', backgroundColor: TOKENS.accent, color: '#000', padding: '16px', borderRadius: '12px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-                Sign In <ChevronRight size={18} />
+              <button type="submit" style={{ marginTop: '12px', backgroundColor: TOKENS.accent, color: '#000', padding: '14px', borderRadius: '6px', border: 'none', fontSize: '14px', fontWeight: '600', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', transition: 'opacity 0.2s' }} onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'} onMouseOut={(e) => e.currentTarget.style.opacity = '1'}>
+                {isSignUp ? 'Create Account' : 'Sign In'}
               </button>
             </form>
+
+            <div style={{ marginTop: '24px', textAlign: 'center', color: TOKENS.textSecondary, fontSize: '13px' }}>
+              {isSignUp ? (
+                <>
+                  Already have an account? <span onClick={() => setIsSignUp(false)} style={{ color: TOKENS.accent, fontWeight: '600', cursor: 'pointer' }}>Sign In</span>
+                </>
+              ) : (
+                <>
+                  Don't have an account? <span onClick={() => setIsSignUp(true)} style={{ color: TOKENS.accent, fontWeight: '600', cursor: 'pointer' }}>Sign Up</span>
+                </>
+              )}
+            </div>
           </div>
         ) : (
           <>
