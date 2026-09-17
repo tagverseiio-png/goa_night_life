@@ -3,16 +3,16 @@ import './global.css';
 import { Home, CalendarDays, User, Wine, Trophy, Bell, ScanLine, Music, Users, Search, ChevronRight, Star, Plus, Camera, Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, X, CheckCircle2 } from 'lucide-react';
 
 const TOKENS = {
-  bg: '#0A0A0F',
-  surface: '#12121A',
-  surfaceHigh: '#1C1C28',
-  accent: '#C8A96E',
-  accentGlow: 'rgba(200, 169, 110, 0.15)',
-  textPrimary: '#F0EDE8',
-  textSecondary: '#7A7880',
-  destructive: '#E05C5C',
-  success: '#4CAF7D',
-  border: 'rgba(255,255,255,0.06)',
+  bg: 'var(--color-bg)',
+  surface: 'var(--color-surface)',
+  surfaceHigh: 'var(--color-surfaceHigh)',
+  accent: 'var(--color-accent)',
+  accentGlow: 'var(--color-accentGlow)',
+  textPrimary: 'var(--color-textPrimary)',
+  textSecondary: 'var(--color-textSecondary)',
+  destructive: 'var(--color-destructive)',
+  success: 'var(--color-success)',
+  border: 'var(--color-border)',
 };
 
 const DATA = {
@@ -795,6 +795,8 @@ const MyGoaScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
         return <div style={{ color: TOKENS.textSecondary, fontSize: '13px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>Last visit: Friday Noir (2 Sep 2026). Total spend: ₹42,000.</div>;
       case 'Saved Preferences':
         return <div style={{ color: TOKENS.textSecondary, fontSize: '13px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>Music: Techno, House. Table size: 4-6 guests. Zone: VIP Floor.</div>;
+      case 'Rewards':
+        return <RewardsScreen showToast={showToast} embedded={true} />;
       case 'Notifications':
         return (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>
@@ -849,7 +851,7 @@ const MyGoaScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {['Upcoming Reservations', 'Past Visits', 'Saved Preferences', 'Notifications'].map(section => (
+        {['Upcoming Reservations', 'Past Visits', 'Rewards', 'Saved Preferences', 'Notifications'].map(section => (
           <div key={section} style={{ backgroundColor: TOKENS.surface, borderRadius: '12px', border: `1px solid ${TOKENS.border}` }}>
             <div onClick={() => toggleSection(section)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', cursor: 'pointer' }}>
               <span style={{ color: TOKENS.textPrimary, fontSize: '15px' }}>{section}</span>
@@ -920,7 +922,7 @@ const BottleWalletScreen = ({ showToast }: { showToast: (msg: string) => void })
   )
 };
 
-const RewardsScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
+const RewardsScreen = ({ showToast, embedded }: { showToast: (msg: string) => void, embedded?: boolean }) => {
   const [points, setPoints] = useState(DATA.user.points);
 
   const handleRedeem = (offerTitle: string, cost: number) => {
@@ -933,8 +935,8 @@ const RewardsScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
   };
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-      <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '24px', marginTop: 0 }}>Rewards</h2>
+    <div style={{ flex: embedded ? undefined : 1, overflowY: embedded ? undefined : 'auto', padding: embedded ? '0px' : '24px' }}>
+      {!embedded && <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '24px', marginTop: 0 }}>Rewards</h2>}
 
       <Card style={{ 
         background: `linear-gradient(135deg, ${TOKENS.surfaceHigh} 0%, #2A241A 100%)`, 
@@ -990,6 +992,7 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [nightModeActive, setNightModeActive] = useState(false);
+  const [isLightMode, setIsLightMode] = useState(false);
   
   // Toast State
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -1006,8 +1009,7 @@ export default function App() {
     { id: 'reserve', icon: CalendarDays, label: 'Reserve' },
     { id: 'social', icon: Users, label: 'Social' },
     { id: 'mygoa', icon: User, label: 'My GOA' },
-    { id: 'wallet', icon: Wine, label: 'Wallet' },
-    { id: 'rewards', icon: Trophy, label: 'Rewards' }
+    { id: 'wallet', icon: Wine, label: 'Wallet' }
   ];
 
   const renderScreen = () => {
@@ -1023,11 +1025,37 @@ export default function App() {
   };
 
   return (
-    <div className="app-wrapper font-['Inter',sans-serif]">
+    <div className={`app-wrapper font-['Inter',sans-serif] ${isLightMode ? 'theme-light' : 'theme-dark'}`}>
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
           
+          .theme-dark {
+            --color-bg: #0A0A0F;
+            --color-surface: #12121A;
+            --color-surfaceHigh: #1C1C28;
+            --color-accent: #C8A96E;
+            --color-accentGlow: rgba(200, 169, 110, 0.15);
+            --color-textPrimary: #F0EDE8;
+            --color-textSecondary: #7A7880;
+            --color-destructive: #E05C5C;
+            --color-success: #4CAF7D;
+            --color-border: rgba(255,255,255,0.06);
+          }
+          
+          .theme-light {
+            --color-bg: #F5F5F7;
+            --color-surface: #FFFFFF;
+            --color-surfaceHigh: #EAEAEA;
+            --color-accent: #B08D50;
+            --color-accentGlow: rgba(176, 141, 80, 0.15);
+            --color-textPrimary: #111111;
+            --color-textSecondary: #666666;
+            --color-destructive: #D32F2F;
+            --color-success: #388E3C;
+            --color-border: rgba(0,0,0,0.1);
+          }
+
           * { box-sizing: border-box; }
           
           @keyframes fadeIn {
@@ -1113,6 +1141,30 @@ export default function App() {
           borderRadius: '16px',
           zIndex: 100
         }} />
+
+        {/* Theme Toggle Button */}
+        <button 
+          onClick={() => setIsLightMode(!isLightMode)}
+          style={{
+            position: 'absolute',
+            top: '12px',
+            right: '24px',
+            zIndex: 101,
+            background: TOKENS.surfaceHigh,
+            border: \`1px solid \${TOKENS.border}\`,
+            borderRadius: '20px',
+            padding: '6px 12px',
+            color: TOKENS.textPrimary,
+            fontSize: '12px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+          }}
+        >
+          {isLightMode ? 'Night Mode' : 'Day Mode'}
+        </button>
 
         {/* Global Toast Overlay */}
         {toastMsg && (
