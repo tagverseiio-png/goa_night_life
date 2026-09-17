@@ -1052,8 +1052,8 @@ export default function App() {
         style={{ backgroundColor: TOKENS.bg }}
       >
         
-        {/* Hardware Notch/Island (Cosmetic) */}
-        <div style={{
+        {/* Hardware Notch/Island (Cosmetic) - Hidden on mobile */}
+        <div className="hidden sm:block" style={{
           position: 'absolute',
           top: '12px',
           left: '50%',
@@ -1091,8 +1091,8 @@ export default function App() {
           </div>
         )}
 
-        {/* Status Bar Space */}
-        <div style={{ height: '54px', flexShrink: 0 }} />
+        {/* Status Bar Space - Reduced on mobile */}
+        <div className="h-4 sm:h-[54px] shrink-0" />
 
         {/* Main Content Area */}
         {renderScreen()}
