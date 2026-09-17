@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, CalendarDays, User, Wine, Trophy, Bell, ScanLine, Music, Users, Search, ChevronRight, Star, Plus, Camera, Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, X } from 'lucide-react';
+import { Home, CalendarDays, User, Wine, Trophy, Bell, ScanLine, Music, Users, Search, ChevronRight, Star, Plus, Camera, Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, X, CheckCircle2 } from 'lucide-react';
 
 const TOKENS = {
   bg: '#0A0A0F',
@@ -31,13 +31,13 @@ const DATA = {
     guests: 4
   },
   events: [
-    { name: "Saturday Ritual", dj: "DJ KSHMR", date: "13 Sep", status: "BOOK NOW", price: "₹8,000" },
-    { name: "Friday Noir", dj: "DJ Snake B2B", date: "19 Sep", status: "SOLD OUT", price: "₹12,000" },
-    { name: "GOA Founders Night", dj: "Exclusive", date: "27 Sep", status: "BOOK NOW", price: "₹25,000" }
+    { name: "Saturday Ritual", dj: "DJ KSHMR", date: "13 Sep", status: "BOOK NOW", price: "₹8,000", category: "Live DJ", image: "https://loremflickr.com/400/160/dj,concert" },
+    { name: "Friday Noir", dj: "DJ Snake B2B", date: "19 Sep", status: "SOLD OUT", price: "₹12,000", category: "Weekend", image: "https://loremflickr.com/400/160/nightclub,party" },
+    { name: "GOA Founders Night", dj: "Exclusive", date: "27 Sep", status: "BOOK NOW", price: "₹25,000", category: "Special Event", image: "https://loremflickr.com/400/160/cocktail,club" }
   ],
   bottles: [
-    { name: "Johnnie Walker Black Label", remaining: 650, total: 750, expiry: "24 Oct 2026", status: "STORED" },
-    { name: "Grey Goose Vodka", remaining: 200, total: 750, expiry: "18 Sep 2026", status: "EXPIRING SOON" }
+    { id: 1, name: "Johnnie Walker Black Label", remaining: 650, total: 750, expiry: "24 Oct 2026", status: "STORED" },
+    { id: 2, name: "Grey Goose Vodka", remaining: 200, total: 750, expiry: "18 Sep 2026", status: "EXPIRING SOON" }
   ],
   stories: [
     { name: "You", seen: false, isOwn: true },
@@ -175,6 +175,7 @@ const StatusPill = ({ text, status }: { text: string, status: string }) => {
   if (status === 'EXPIRING SOON') color = '#FFA000';
   if (status === 'SOLD OUT') color = TOKENS.destructive;
   if (status === 'BOOK NOW') color = TOKENS.accent;
+  if (status === 'RETRIEVED') color = TOKENS.accent;
   
   return (
     <span style={{
@@ -232,7 +233,7 @@ const Avatar = ({ initials, size = 42 }: { initials: string, size?: number }) =>
 
 // --- Screens ---
 
-const SocialScreen = () => {
+const SocialScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
   const [postsState, setPostsState] = useState(DATA.posts);
   const [createPostOpen, setCreatePostOpen] = useState(false);
   const [commentSheetOpen, setCommentSheetOpen] = useState(false);
@@ -251,11 +252,23 @@ const SocialScreen = () => {
 
   const toggleSave = (id: number) => {
     setPostsState(prev => prev.map(p => p.id === id ? { ...p, saved: !p.saved } : p));
+    showToast("Post saved to collection");
   };
   
   const openComments = (id: number) => {
     setActivePostId(id);
     setCommentSheetOpen(true);
+  };
+
+  const handlePost = () => {
+    setCreatePostOpen(false);
+    showToast("Your post has been published to GOA Community!");
+  };
+
+  const handleComment = () => {
+    setCommentText('');
+    setCommentSheetOpen(false);
+    showToast("Comment added!");
   };
 
   const activePost = postsState.find(p => p.id === activePostId);
@@ -318,7 +331,7 @@ const SocialScreen = () => {
         {/* Stories Row */}
         <div style={{ display: 'flex', gap: '16px', padding: '0 24px 24px 24px', overflowX: 'auto', scrollbarWidth: 'none' }}>
           {DATA.stories.map((story, i) => (
-            <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}>
+            <div key={i} onClick={() => !story.isOwn && showToast(`Viewing ${story.name}'s story`)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}>
               <div style={{
                 width: '56px',
                 height: '56px',
@@ -330,7 +343,7 @@ const SocialScreen = () => {
                 padding: '2px'
               }}>
                 {story.isOwn ? (
-                  <div style={{ width: '48px', height: '48px', borderRadius: '24px', backgroundColor: TOKENS.surfaceHigh, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div onClick={(e) => { e.stopPropagation(); setCreatePostOpen(true); }} style={{ width: '48px', height: '48px', borderRadius: '24px', backgroundColor: TOKENS.surfaceHigh, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Plus size={20} color={TOKENS.accent} />
                   </div>
                 ) : (
@@ -359,7 +372,9 @@ const SocialScreen = () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                   <span style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>{post.time}</span>
-                  <MoreHorizontal size={20} color={TOKENS.textSecondary} />
+                  <button onClick={() => showToast("Post options menu")} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <MoreHorizontal size={20} color={TOKENS.textSecondary} />
+                  </button>
                 </div>
               </div>
 
@@ -392,7 +407,7 @@ const SocialScreen = () => {
                     style={{ cursor: 'pointer', transition: 'transform 0.2s', transform: post.liked ? 'scale(1.1)' : 'scale(1)' }} 
                   />
                   <MessageCircle size={24} color={TOKENS.textPrimary} onClick={() => openComments(post.id)} style={{ cursor: 'pointer' }} />
-                  <Share2 size={24} color={TOKENS.textPrimary} style={{ cursor: 'pointer' }} />
+                  <Share2 size={24} color={TOKENS.textPrimary} onClick={() => showToast("Share menu opened")} style={{ cursor: 'pointer' }} />
                 </div>
                 <Bookmark 
                   size={24} 
@@ -446,7 +461,7 @@ const SocialScreen = () => {
           </div>
           
           <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ height: '200px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '12px', border: `1px dashed ${TOKENS.accent}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', cursor: 'pointer' }}>
+            <div onClick={() => showToast("Camera / Gallery opened")} style={{ height: '200px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '12px', border: `1px dashed ${TOKENS.accent}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', cursor: 'pointer' }}>
               <Camera size={32} color={TOKENS.textSecondary} />
               <span style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>Tap to add photo or video</span>
             </div>
@@ -476,25 +491,25 @@ const SocialScreen = () => {
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '12px' }}>
+            <div onClick={() => showToast("Event selection opened")} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '12px', cursor: 'pointer' }}>
               <span style={{ color: TOKENS.textPrimary, fontSize: '14px' }}>🎉 Tag tonight's event</span>
               <StatusPill text="Saturday Ritual ft. DJ KSHMR" status="BOOK NOW" />
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '12px' }}>
+            <div onClick={() => showToast("Tag people sheet opened")} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '12px', cursor: 'pointer' }}>
               <span style={{ color: TOKENS.textPrimary, fontSize: '14px' }}>👥 Tag people</span>
               <ChevronRight size={18} color={TOKENS.textSecondary} />
             </div>
             
             <div style={{ display: 'flex', backgroundColor: TOKENS.surfaceHigh, borderRadius: '8px', padding: '4px' }}>
                {['Everyone', 'Friends', 'Table Only'].map((opt, i) => (
-                 <div key={opt} style={{ flex: 1, textAlign: 'center', padding: '8px', fontSize: '12px', color: i === 0 ? TOKENS.textPrimary : TOKENS.textSecondary, backgroundColor: i === 0 ? TOKENS.surface : 'transparent', borderRadius: '6px' }}>{opt}</div>
+                 <div key={opt} onClick={() => showToast(`Visibility set to ${opt}`)} style={{ flex: 1, textAlign: 'center', padding: '8px', fontSize: '12px', color: i === 0 ? TOKENS.textPrimary : TOKENS.textSecondary, backgroundColor: i === 0 ? TOKENS.surface : 'transparent', borderRadius: '6px', cursor: 'pointer' }}>{opt}</div>
                ))}
             </div>
           </div>
           
           <div style={{ marginTop: '20px' }}>
-            <Button fullWidth onClick={() => setCreatePostOpen(false)}>Post to GOA</Button>
+            <Button fullWidth onClick={handlePost}>Post to GOA</Button>
           </div>
         </div>
       )}
@@ -537,14 +552,14 @@ const SocialScreen = () => {
                             <span style={{ fontWeight: '600', marginRight: '8px' }}>{c.user}</span>
                             {c.text}
                          </div>
-                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                           <Heart size={14} color={TOKENS.textSecondary} style={{ cursor: 'pointer' }} />
+                         <div onClick={() => showToast("Comment liked")} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                           <Heart size={14} color={TOKENS.textSecondary} />
                            <span style={{ color: TOKENS.textSecondary, fontSize: '10px' }}>{c.likes}</span>
                          </div>
                       </div>
                       <div style={{ display: 'flex', gap: '16px', marginTop: '8px' }}>
                          <span style={{ color: TOKENS.textSecondary, fontSize: '11px' }}>{c.time}</span>
-                         <span style={{ color: TOKENS.accent, fontSize: '11px', fontWeight: '500', cursor: 'pointer' }}>Reply</span>
+                         <span onClick={() => showToast(`Replying to ${c.user}`)} style={{ color: TOKENS.accent, fontSize: '11px', fontWeight: '500', cursor: 'pointer' }}>Reply</span>
                       </div>
                    </div>
                 </div>
@@ -560,7 +575,7 @@ const SocialScreen = () => {
                onChange={(e) => setCommentText(e.target.value)}
                style={{ flex: 1, backgroundColor: 'transparent', border: 'none', color: TOKENS.textPrimary, fontSize: '14px', outline: 'none' }}
              />
-             <button disabled={!commentText.trim()} style={{ background: 'none', border: 'none', color: TOKENS.accent, fontSize: '14px', fontWeight: '600', opacity: commentText.trim() ? 1 : 0.5, cursor: commentText.trim() ? 'pointer' : 'not-allowed' }}>
+             <button onClick={handleComment} disabled={!commentText.trim()} style={{ background: 'none', border: 'none', color: TOKENS.accent, fontSize: '14px', fontWeight: '600', opacity: commentText.trim() ? 1 : 0.5, cursor: commentText.trim() ? 'pointer' : 'not-allowed' }}>
                Post
              </button>
           </div>
@@ -570,7 +585,9 @@ const SocialScreen = () => {
   );
 };
 
-const HomeScreen = ({ nightModeActive, setNightModeActive }: { nightModeActive: boolean, setNightModeActive: (active: boolean) => void }) => {
+const HomeScreen = ({ nightModeActive, setNightModeActive, showToast }: { nightModeActive: boolean, setNightModeActive: (active: boolean) => void, showToast: (msg: string) => void }) => {
+  const [showQR, setShowQR] = useState(false);
+
   if (nightModeActive) {
     return (
       <div style={{ flex: 1, padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', animation: 'fadeIn 0.5s' }}>
@@ -590,9 +607,11 @@ const HomeScreen = ({ nightModeActive, setNightModeActive }: { nightModeActive: 
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '12px' }}>
           {['Order', 'Request Song', 'Call Waiter', 'My Bill'].map(action => (
-            <Card key={action} style={{ padding: '16px 12px', textAlign: 'center', cursor: 'pointer', backgroundColor: TOKENS.surfaceHigh }}>
-              <span style={{ color: TOKENS.textPrimary, fontSize: '14px', fontWeight: '500' }}>{action}</span>
-            </Card>
+            <div key={action} onClick={() => showToast(`${action} requested for Table 14`)}>
+              <Card style={{ padding: '16px 12px', textAlign: 'center', cursor: 'pointer', backgroundColor: TOKENS.surfaceHigh }}>
+                <span style={{ color: TOKENS.textPrimary, fontSize: '14px', fontWeight: '500' }}>{action}</span>
+              </Card>
+            </div>
           ))}
         </div>
 
@@ -616,250 +635,369 @@ const HomeScreen = ({ nightModeActive, setNightModeActive }: { nightModeActive: 
   }
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '24px' }}>
-      <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: '300', color: TOKENS.textPrimary, letterSpacing: '4px', margin: 0 }}>GOA</h1>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <button onClick={() => setNightModeActive(true)} style={{ background: 'none', border: `1px solid ${TOKENS.border}`, borderRadius: '20px', padding: '6px 12px', color: TOKENS.textSecondary, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            Night Mode <ChevronRight size={12} />
-          </button>
-          <Bell color={TOKENS.textPrimary} size={24} />
-          <div style={{ width: '32px', height: '32px', borderRadius: '16px', overflow: 'hidden', border: `1px solid ${TOKENS.accent}` }}>
-            <img src="/logo.jpeg" alt="GOA Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+    <div style={{ flex: 1, position: 'relative' }}>
+      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '24px', height: '100%' }}>
+        <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '300', color: TOKENS.textPrimary, letterSpacing: '4px', margin: 0 }}>GOA</h1>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <button onClick={() => setNightModeActive(true)} style={{ background: 'none', border: `1px solid ${TOKENS.border}`, borderRadius: '20px', padding: '6px 12px', color: TOKENS.textSecondary, fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              Night Mode <ChevronRight size={12} />
+            </button>
+            <button onClick={() => showToast("No new notifications")} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+              <Bell color={TOKENS.textPrimary} size={24} />
+            </button>
+            <div onClick={() => showToast("Profile settings opened")} style={{ width: '32px', height: '32px', borderRadius: '16px', overflow: 'hidden', border: `1px solid ${TOKENS.accent}`, cursor: 'pointer' }}>
+              <img src="/logo.jpeg" alt="GOA Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+          </div>
+        </div>
+
+        <div style={{ padding: '0 24px' }}>
+          <div style={{ fontSize: '20px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '4px' }}>
+            Good evening, {DATA.user.name.split(' ')[0]}
+          </div>
+          <TierBadge tier={DATA.user.tier} />
+        </div>
+
+        <div style={{ padding: '24px' }}>
+          <Card style={{ position: 'relative', overflow: 'hidden' }}>
+            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, ${TOKENS.accent}, transparent)` }} />
+            <div style={{ color: TOKENS.textSecondary, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Next Reservation</div>
+            <div style={{ fontSize: '18px', color: TOKENS.textPrimary, fontWeight: '500', marginBottom: '4px' }}>{DATA.upcomingReservation.event}</div>
+            <div style={{ color: TOKENS.textSecondary, fontSize: '14px', marginBottom: '16px' }}>{DATA.upcomingReservation.date} • {DATA.upcomingReservation.table}</div>
+            <Button fullWidth onClick={() => setShowQR(true)}>
+              <ScanLine size={18} /> View QR Code
+            </Button>
+          </Card>
+        </div>
+
+        <div style={{ padding: '0 0 24px 24px' }}>
+          <div style={{ fontSize: '16px', color: TOKENS.textPrimary, fontWeight: '500', marginBottom: '16px' }}>Happening This Week</div>
+          <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingRight: '24px', scrollbarWidth: 'none' }}>
+            {DATA.events.map((event, i) => (
+              <Card key={i} style={{ minWidth: '240px', flexShrink: 0, padding: 0, overflow: 'hidden' }}>
+                <div style={{ height: '120px', backgroundColor: TOKENS.surfaceHigh, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <img src={event.image} alt="Event" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <div style={{ padding: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
+                    <div>
+                      <div style={{ color: TOKENS.textPrimary, fontSize: '14px', fontWeight: '500' }}>{event.name}</div>
+                      <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>{event.date} • {event.dj}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+                    <span style={{ color: TOKENS.textSecondary, fontSize: '14px' }}>{event.price}</span>
+                    <StatusPill text={event.status} status={event.status} />
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
         </div>
       </div>
 
-      <div style={{ padding: '0 24px' }}>
-        <div style={{ fontSize: '20px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '4px' }}>
-          Good evening, {DATA.user.name.split(' ')[0]}
+      {/* QR Code Modal Overlay */}
+      {showQR && (
+        <div style={{
+          position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(10, 10, 15, 0.95)',
+          zIndex: 100, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', animation: 'fadeIn 0.2s'
+        }}>
+          <button onClick={() => setShowQR(false)} style={{ position: 'absolute', top: '24px', right: '24px', background: 'none', border: 'none', color: TOKENS.textSecondary, cursor: 'pointer' }}>
+            <X size={28} />
+          </button>
+          
+          <h2 style={{ color: TOKENS.textPrimary, fontSize: '20px', fontWeight: '400', marginBottom: '8px' }}>Your Entry Pass</h2>
+          <p style={{ color: TOKENS.textSecondary, fontSize: '14px', marginBottom: '32px', textAlign: 'center' }}>{DATA.upcomingReservation.event}</p>
+          
+          <div style={{ backgroundColor: '#FFF', padding: '16px', borderRadius: '16px', marginBottom: '24px' }}>
+            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${DATA.user.goaId}`} alt="QR Code" style={{ width: '200px', height: '200px' }} />
+          </div>
+          
+          <div style={{ color: TOKENS.accent, fontSize: '16px', fontWeight: '500', letterSpacing: '2px' }}>{DATA.user.goaId}</div>
+          <p style={{ color: TOKENS.textSecondary, fontSize: '12px', marginTop: '12px' }}>Show this at the entrance</p>
         </div>
-        <TierBadge tier={DATA.user.tier} />
-      </div>
-
-      <div style={{ padding: '24px' }}>
-        <Card style={{ position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, ${TOKENS.accent}, transparent)` }} />
-          <div style={{ color: TOKENS.textSecondary, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Next Reservation</div>
-          <div style={{ fontSize: '18px', color: TOKENS.textPrimary, fontWeight: '500', marginBottom: '4px' }}>{DATA.upcomingReservation.event}</div>
-          <div style={{ color: TOKENS.textSecondary, fontSize: '14px', marginBottom: '16px' }}>{DATA.upcomingReservation.date} • {DATA.upcomingReservation.table}</div>
-          <Button fullWidth>
-            <ScanLine size={18} /> View QR Code
-          </Button>
-        </Card>
-      </div>
-
-      <div style={{ padding: '0 0 24px 24px' }}>
-        <div style={{ fontSize: '16px', color: TOKENS.textPrimary, fontWeight: '500', marginBottom: '16px' }}>Happening This Week</div>
-        <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingRight: '24px', scrollbarWidth: 'none' }}>
-          {DATA.events.map((event, i) => (
-            <Card key={i} style={{ minWidth: '240px', flexShrink: 0, padding: 0, overflow: 'hidden' }}>
-              <div style={{ height: '120px', backgroundColor: TOKENS.surfaceHigh, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: TOKENS.textSecondary, fontSize: '12px', letterSpacing: '2px' }}>IMAGE 16:9</span>
-              </div>
-              <div style={{ padding: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                  <div>
-                    <div style={{ color: TOKENS.textPrimary, fontSize: '14px', fontWeight: '500' }}>{event.name}</div>
-                    <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>{event.date} • {event.dj}</div>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
-                  <span style={{ color: TOKENS.textSecondary, fontSize: '14px' }}>{event.price}</span>
-                  <StatusPill text={event.status} status={event.status} />
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-      </div>
+      )}
     </div>
   );
 };
 
-const ReserveScreen = () => (
-  <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-    <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '24px', marginTop: 0 }}>Reservations</h2>
-    
-    <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '8px' }}>
-      {['All', 'Weekend', 'Special Event', 'Live DJ'].map((filter, i) => (
-        <span key={filter} style={{ 
-          padding: '8px 16px', 
-          borderRadius: '20px', 
-          backgroundColor: i === 0 ? TOKENS.surfaceHigh : 'transparent',
-          border: `1px solid ${i === 0 ? TOKENS.surfaceHigh : TOKENS.border}`,
-          color: i === 0 ? TOKENS.textPrimary : TOKENS.textSecondary,
-          fontSize: '14px',
-          whiteSpace: 'nowrap'
-        }}>
-          {filter}
-        </span>
-      ))}
-    </div>
+const ReserveScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
+  const [activeFilter, setActiveFilter] = useState('All');
+  
+  const filteredEvents = DATA.events.filter(e => activeFilter === 'All' || e.category === activeFilter || (activeFilter === 'Weekend' && e.date.includes('Sep')));
 
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {DATA.events.map((event, i) => (
-        <Card key={i} style={{ padding: 0, overflow: 'hidden' }}>
-          <div style={{ height: '160px', backgroundColor: TOKENS.surfaceHigh, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-             <span style={{ color: TOKENS.textSecondary, fontSize: '12px', letterSpacing: '2px' }}>EVENT IMAGE</span>
-             <div style={{ position: 'absolute', bottom: '12px', right: '12px' }}>
-               <StatusPill text={event.status} status={event.status} />
-             </div>
-          </div>
-          <div style={{ padding: '20px' }}>
-            <div style={{ fontSize: '18px', color: TOKENS.textPrimary, fontWeight: '500', marginBottom: '4px' }}>{event.name}</div>
-            <div style={{ color: TOKENS.textSecondary, fontSize: '14px', marginBottom: '16px' }}>{event.date} • {event.dj}</div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: TOKENS.textPrimary, fontSize: '14px' }}>From {event.price}</span>
-              <Button>View & Book</Button>
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+      <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '24px', marginTop: 0 }}>Reservations</h2>
+      
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '8px' }}>
+        {['All', 'Weekend', 'Special Event', 'Live DJ'].map((filter) => {
+          const isActive = activeFilter === filter;
+          return (
+            <button key={filter} onClick={() => setActiveFilter(filter)} style={{ 
+              padding: '8px 16px', 
+              borderRadius: '20px', 
+              backgroundColor: isActive ? TOKENS.surfaceHigh : 'transparent',
+              border: `1px solid ${isActive ? TOKENS.surfaceHigh : TOKENS.border}`,
+              color: isActive ? TOKENS.textPrimary : TOKENS.textSecondary,
+              fontSize: '14px',
+              whiteSpace: 'nowrap',
+              cursor: 'pointer'
+            }}>
+              {filter}
+            </button>
+          )
+        })}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        {filteredEvents.map((event, i) => (
+          <Card key={i} style={{ padding: 0, overflow: 'hidden' }}>
+            <div style={{ height: '160px', backgroundColor: TOKENS.surfaceHigh, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+               <img src={event.image} alt="Event" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+               <div style={{ position: 'absolute', bottom: '12px', right: '12px' }}>
+                 <StatusPill text={event.status} status={event.status} />
+               </div>
             </div>
-          </div>
-        </Card>
-      ))}
-    </div>
-  </div>
-);
-
-const MyGoaScreen = () => (
-  <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px', marginTop: '16px' }}>
-      <div style={{ width: '80px', height: '80px', borderRadius: '40px', backgroundColor: TOKENS.surfaceHigh, border: `2px solid ${TOKENS.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: TOKENS.accent, marginBottom: '16px' }}>
-        {DATA.user.name.split(' ').map(n => n[0]).join('')}
-      </div>
-      <div style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '400', marginBottom: '4px' }}>{DATA.user.name}</div>
-      <div style={{ color: TOKENS.textSecondary, fontSize: '14px', letterSpacing: '1px' }}>{DATA.user.goaId}</div>
-    </div>
-
-    <Card style={{ marginBottom: '24px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-        <span style={{ color: TOKENS.textPrimary, fontSize: '14px', fontWeight: '500' }}>{DATA.user.tier} TIER</span>
-        <span style={{ color: TOKENS.accent, fontSize: '14px' }}>{DATA.user.points} pts</span>
-      </div>
-      <div style={{ height: '4px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '2px', overflow: 'hidden' }}>
-        <div style={{ width: '60%', height: '100%', backgroundColor: TOKENS.accent }} />
-      </div>
-      <div style={{ color: TOKENS.textSecondary, fontSize: '12px', marginTop: '8px', textAlign: 'right' }}>150 pts to VIP</div>
-    </Card>
-
-    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px', padding: '0 16px' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ color: TOKENS.textPrimary, fontSize: '18px', fontWeight: '500' }}>{DATA.user.visits}</div>
-        <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>Visits</div>
-      </div>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ color: TOKENS.textPrimary, fontSize: '18px', fontWeight: '500' }}>₹3.2L</div>
-        <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>Spent</div>
-      </div>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ color: TOKENS.textPrimary, fontSize: '18px', fontWeight: '500' }}>2024</div>
-        <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>Member</div>
-      </div>
-    </div>
-
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {['Upcoming Reservations', 'Past Visits', 'Saved Preferences', 'Notifications'].map(section => (
-        <div key={section} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', backgroundColor: TOKENS.surface, borderRadius: '12px', border: `1px solid ${TOKENS.border}` }}>
-          <span style={{ color: TOKENS.textPrimary, fontSize: '15px' }}>{section}</span>
-          <ChevronRight size={18} color={TOKENS.textSecondary} />
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-const BottleWalletScreen = () => (
-  <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-      <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', margin: 0 }}>My Bottles</h2>
-      <Button variant="ghost" style={{ padding: '6px 12px', fontSize: '14px' }}>
-        <Plus size={16} /> Add
-      </Button>
-    </div>
-
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      {DATA.bottles.map((bottle, i) => (
-        <Card key={i}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-            <div>
-              <div style={{ color: TOKENS.textPrimary, fontSize: '16px', fontWeight: '500', marginBottom: '4px' }}>{bottle.name}</div>
-              <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>Expires {bottle.expiry}</div>
-            </div>
-            <StatusPill text={bottle.status} status={bottle.status} />
-          </div>
-          
-          <div style={{ marginBottom: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '8px' }}>
-              <span style={{ color: TOKENS.textSecondary }}>Remaining</span>
-              <span style={{ color: TOKENS.textPrimary }}>{bottle.remaining}ml / {bottle.total}ml</span>
-            </div>
-            <div style={{ height: '6px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '3px', overflow: 'hidden' }}>
-              <div style={{ width: `${(bottle.remaining / bottle.total) * 100}%`, height: '100%', backgroundColor: TOKENS.accent }} />
-            </div>
-          </div>
-
-          <Button fullWidth variant={bottle.status === 'STORED' ? 'primary' : 'ghost'}>
-            Retrieve Tonight
-          </Button>
-        </Card>
-      ))}
-    </div>
-  </div>
-);
-
-const RewardsScreen = () => (
-  <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
-    <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '24px', marginTop: 0 }}>Rewards</h2>
-
-    <Card style={{ 
-      background: `linear-gradient(135deg, ${TOKENS.surfaceHigh} 0%, #2A241A 100%)`, 
-      border: `1px solid ${TOKENS.accent}`,
-      marginBottom: '32px',
-      padding: '24px'
-    }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
-        <div>
-          <div style={{ color: TOKENS.textPrimary, fontSize: '20px', fontWeight: '400', marginBottom: '4px' }}>{DATA.user.name}</div>
-          <div style={{ color: TOKENS.textSecondary, fontSize: '14px', letterSpacing: '2px' }}>{DATA.user.goaId}</div>
-        </div>
-        <div style={{ textAlign: 'right' }}>
-          <div style={{ color: TOKENS.accent, fontSize: '24px', fontWeight: '300' }}>{DATA.user.points}</div>
-          <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>PTS</div>
-        </div>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <TierBadge tier={DATA.user.tier} />
-        <h1 style={{ fontSize: '16px', fontWeight: '300', color: TOKENS.accent, letterSpacing: '4px', margin: 0, opacity: 0.5 }}>GOA</h1>
-      </div>
-    </Card>
-
-    <div style={{ marginBottom: '32px' }}>
-      <h3 style={{ fontSize: '18px', color: TOKENS.textPrimary, fontWeight: '400', marginBottom: '16px' }}>Redeem Points</h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {[
-          { title: 'Priority Table Access', pts: 500, icon: <Star size={18} color={TOKENS.accent} /> },
-          { title: 'Birthday Upgrade', pts: 1000, icon: <Trophy size={18} color={TOKENS.accent} /> },
-          { title: 'Complimentary Welcome Shot', pts: 200, icon: <Wine size={18} color={TOKENS.accent} /> }
-        ].map((offer, i) => (
-          <Card key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '20px', backgroundColor: TOKENS.accentGlow, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {offer.icon}
+            <div style={{ padding: '20px' }}>
+              <div style={{ fontSize: '18px', color: TOKENS.textPrimary, fontWeight: '500', marginBottom: '4px' }}>{event.name}</div>
+              <div style={{ color: TOKENS.textSecondary, fontSize: '14px', marginBottom: '16px' }}>{event.date} • {event.dj}</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: TOKENS.textPrimary, fontSize: '14px' }}>From {event.price}</span>
+                <Button onClick={() => showToast(`Booking flow started for ${event.name}`)}>View & Book</Button>
               </div>
-              <span style={{ color: TOKENS.textPrimary, fontSize: '14px' }}>{offer.title}</span>
             </div>
-            <span style={{ color: TOKENS.accent, fontSize: '14px', fontWeight: '500' }}>{offer.pts} pts</span>
+          </Card>
+        ))}
+        {filteredEvents.length === 0 && (
+          <div style={{ color: TOKENS.textSecondary, textAlign: 'center', marginTop: '40px' }}>No events found for this filter.</div>
+        )}
+      </div>
+    </div>
+  )
+};
+
+const MyGoaScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
+  const [expandedSection, setExpandedSection] = useState<string | null>(null);
+
+  const toggleSection = (section: string) => {
+    setExpandedSection(prev => prev === section ? null : section);
+  };
+
+  const getSectionContent = (section: string) => {
+    switch(section) {
+      case 'Upcoming Reservations':
+        return <div style={{ color: TOKENS.textSecondary, fontSize: '13px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>You have 1 upcoming reservation on 13 Sep for Table 14.</div>;
+      case 'Past Visits':
+        return <div style={{ color: TOKENS.textSecondary, fontSize: '13px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>Last visit: Friday Noir (2 Sep 2026). Total spend: ₹42,000.</div>;
+      case 'Saved Preferences':
+        return <div style={{ color: TOKENS.textSecondary, fontSize: '13px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>Music: Techno, House. Table size: 4-6 guests. Zone: VIP Floor.</div>;
+      case 'Notifications':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: TOKENS.textSecondary, fontSize: '13px' }}>Push Notifications</span>
+              <input type="checkbox" defaultChecked onChange={(e) => showToast(`Push notifications ${e.target.checked ? 'enabled' : 'disabled'}`)} />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: TOKENS.textSecondary, fontSize: '13px' }}>Email Updates</span>
+              <input type="checkbox" defaultChecked onChange={(e) => showToast(`Email updates ${e.target.checked ? 'enabled' : 'disabled'}`)} />
+            </div>
+          </div>
+        );
+      default: return null;
+    }
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px', marginTop: '16px' }}>
+        <div style={{ width: '80px', height: '80px', borderRadius: '40px', backgroundColor: TOKENS.surfaceHigh, border: `2px solid ${TOKENS.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: TOKENS.accent, marginBottom: '16px' }}>
+          {DATA.user.name.split(' ').map(n => n[0]).join('')}
+        </div>
+        <div style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '400', marginBottom: '4px' }}>{DATA.user.name}</div>
+        <div style={{ color: TOKENS.textSecondary, fontSize: '14px', letterSpacing: '1px' }}>{DATA.user.goaId}</div>
+      </div>
+
+      <Card style={{ marginBottom: '24px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <span style={{ color: TOKENS.textPrimary, fontSize: '14px', fontWeight: '500' }}>{DATA.user.tier} TIER</span>
+          <span style={{ color: TOKENS.accent, fontSize: '14px' }}>{DATA.user.points} pts</span>
+        </div>
+        <div style={{ height: '4px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '2px', overflow: 'hidden' }}>
+          <div style={{ width: '60%', height: '100%', backgroundColor: TOKENS.accent }} />
+        </div>
+        <div style={{ color: TOKENS.textSecondary, fontSize: '12px', marginTop: '8px', textAlign: 'right' }}>150 pts to VIP</div>
+      </Card>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px', padding: '0 16px' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ color: TOKENS.textPrimary, fontSize: '18px', fontWeight: '500' }}>{DATA.user.visits}</div>
+          <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>Visits</div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ color: TOKENS.textPrimary, fontSize: '18px', fontWeight: '500' }}>₹3.2L</div>
+          <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>Spent</div>
+        </div>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ color: TOKENS.textPrimary, fontSize: '18px', fontWeight: '500' }}>2024</div>
+          <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>Member</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {['Upcoming Reservations', 'Past Visits', 'Saved Preferences', 'Notifications'].map(section => (
+          <div key={section} style={{ backgroundColor: TOKENS.surface, borderRadius: '12px', border: `1px solid ${TOKENS.border}` }}>
+            <div onClick={() => toggleSection(section)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', cursor: 'pointer' }}>
+              <span style={{ color: TOKENS.textPrimary, fontSize: '15px' }}>{section}</span>
+              <ChevronRight size={18} color={TOKENS.textSecondary} style={{ transform: expandedSection === section ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s' }} />
+            </div>
+            {expandedSection === section && (
+              <div style={{ padding: '0 16px 16px 16px', animation: 'fadeIn 0.2s' }}>
+                {getSectionContent(section)}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+};
+
+const BottleWalletScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
+  const [bottles, setBottles] = useState(DATA.bottles);
+
+  const handleRetrieve = (id: number) => {
+    setBottles(prev => prev.map(b => b.id === id ? { ...b, status: 'RETRIEVED' } : b));
+    showToast("Bottle retrieval request sent to your table!");
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+        <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', margin: 0 }}>My Bottles</h2>
+        <Button variant="ghost" style={{ padding: '6px 12px', fontSize: '14px' }} onClick={() => showToast("Only staff can add new bottles to your wallet.")}>
+          <Plus size={16} /> Add
+        </Button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {bottles.map((bottle) => (
+          <Card key={bottle.id}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+              <div>
+                <div style={{ color: TOKENS.textPrimary, fontSize: '16px', fontWeight: '500', marginBottom: '4px' }}>{bottle.name}</div>
+                <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>Expires {bottle.expiry}</div>
+              </div>
+              <StatusPill text={bottle.status} status={bottle.status} />
+            </div>
+            
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '8px' }}>
+                <span style={{ color: TOKENS.textSecondary }}>Remaining</span>
+                <span style={{ color: TOKENS.textPrimary }}>{bottle.remaining}ml / {bottle.total}ml</span>
+              </div>
+              <div style={{ height: '6px', backgroundColor: TOKENS.surfaceHigh, borderRadius: '3px', overflow: 'hidden' }}>
+                <div style={{ width: `${(bottle.remaining / bottle.total) * 100}%`, height: '100%', backgroundColor: TOKENS.accent }} />
+              </div>
+            </div>
+
+            <Button 
+              fullWidth 
+              variant={bottle.status === 'STORED' ? 'primary' : 'ghost'} 
+              disabled={bottle.status === 'RETRIEVED'}
+              onClick={() => handleRetrieve(bottle.id)}
+            >
+              {bottle.status === 'RETRIEVED' ? 'Already Retrieved' : 'Retrieve Tonight'}
+            </Button>
           </Card>
         ))}
       </div>
     </div>
-  </div>
-);
+  )
+};
+
+const RewardsScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
+  const [points, setPoints] = useState(DATA.user.points);
+
+  const handleRedeem = (offerTitle: string, cost: number) => {
+    if (points >= cost) {
+      setPoints(prev => prev - cost);
+      showToast(`Successfully redeemed: ${offerTitle}`);
+    } else {
+      showToast("Not enough points to redeem this offer.");
+    }
+  };
+
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+      <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '24px', marginTop: 0 }}>Rewards</h2>
+
+      <Card style={{ 
+        background: `linear-gradient(135deg, ${TOKENS.surfaceHigh} 0%, #2A241A 100%)`, 
+        border: `1px solid ${TOKENS.accent}`,
+        marginBottom: '32px',
+        padding: '24px'
+      }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+          <div>
+            <div style={{ color: TOKENS.textPrimary, fontSize: '20px', fontWeight: '400', marginBottom: '4px' }}>{DATA.user.name}</div>
+            <div style={{ color: TOKENS.textSecondary, fontSize: '14px', letterSpacing: '2px' }}>{DATA.user.goaId}</div>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ color: TOKENS.accent, fontSize: '24px', fontWeight: '300' }}>{points}</div>
+            <div style={{ color: TOKENS.textSecondary, fontSize: '12px' }}>PTS</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <TierBadge tier={DATA.user.tier} />
+          <h1 style={{ fontSize: '16px', fontWeight: '300', color: TOKENS.accent, letterSpacing: '4px', margin: 0, opacity: 0.5 }}>GOA</h1>
+        </div>
+      </Card>
+
+      <div style={{ marginBottom: '32px' }}>
+        <h3 style={{ fontSize: '18px', color: TOKENS.textPrimary, fontWeight: '400', marginBottom: '16px' }}>Redeem Points</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {[
+            { title: 'Priority Table Access', pts: 500, icon: <Star size={18} color={TOKENS.accent} /> },
+            { title: 'Birthday Upgrade', pts: 1000, icon: <Trophy size={18} color={TOKENS.accent} /> },
+            { title: 'Complimentary Welcome Shot', pts: 200, icon: <Wine size={18} color={TOKENS.accent} /> }
+          ].map((offer, i) => (
+            <div key={i} onClick={() => handleRedeem(offer.title, offer.pts)} style={{ cursor: 'pointer' }}>
+              <Card style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{ width: '40px', height: '40px', borderRadius: '20px', backgroundColor: TOKENS.accentGlow, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {offer.icon}
+                  </div>
+                  <span style={{ color: TOKENS.textPrimary, fontSize: '14px' }}>{offer.title}</span>
+                </div>
+                <span style={{ color: TOKENS.accent, fontSize: '14px', fontWeight: '500' }}>{offer.pts} pts</span>
+              </Card>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+};
 
 // --- Main App & Shell ---
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [nightModeActive, setNightModeActive] = useState(false);
+  
+  // Toast State
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => {
+      setToastMsg(null);
+    }, 3000);
+  };
 
   const TABS = [
     { id: 'home', icon: Home, label: 'Home' },
@@ -872,13 +1010,13 @@ export default function App() {
 
   const renderScreen = () => {
     switch (activeTab) {
-      case 'home': return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} />;
-      case 'reserve': return <ReserveScreen />;
-      case 'social': return <SocialScreen />;
-      case 'mygoa': return <MyGoaScreen />;
-      case 'wallet': return <BottleWalletScreen />;
-      case 'rewards': return <RewardsScreen />;
-      default: return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} />;
+      case 'home': return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} showToast={showToast} />;
+      case 'reserve': return <ReserveScreen showToast={showToast} />;
+      case 'social': return <SocialScreen showToast={showToast} />;
+      case 'mygoa': return <MyGoaScreen showToast={showToast} />;
+      case 'wallet': return <BottleWalletScreen showToast={showToast} />;
+      case 'rewards': return <RewardsScreen showToast={showToast} />;
+      default: return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} showToast={showToast} />;
     }
   };
 
@@ -906,6 +1044,11 @@ export default function App() {
           @keyframes slideUp {
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
+          }
+          
+          @keyframes toastEnter {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
           }
         `}
       </style>
@@ -936,6 +1079,32 @@ export default function App() {
           zIndex: 100
         }} />
 
+        {/* Global Toast Overlay */}
+        {toastMsg && (
+          <div style={{
+            position: 'absolute',
+            bottom: '100px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            backgroundColor: TOKENS.surfaceHigh,
+            border: `1px solid ${TOKENS.accent}`,
+            color: TOKENS.textPrimary,
+            padding: '12px 20px',
+            borderRadius: '24px',
+            zIndex: 1000,
+            fontSize: '13px',
+            fontWeight: '500',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            animation: 'toastEnter 0.3s ease-out',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.5)'
+          }}>
+            <CheckCircle2 size={16} color={TOKENS.accent} />
+            {toastMsg}
+          </div>
+        )}
+
         {/* Status Bar Space */}
         <div style={{ height: '54px', flexShrink: 0 }} />
 
@@ -951,12 +1120,12 @@ export default function App() {
           justifyContent: 'space-around',
           alignItems: 'center',
           paddingBottom: '20px',
-          flexShrink: 0
+          flexShrink: 0,
+          zIndex: 40
         }}>
           {TABS.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
-            // Since we added a 6th tab, we might need slightly smaller font or spacing to fit them all neatly
             return (
               <button 
                 key={tab.id}
