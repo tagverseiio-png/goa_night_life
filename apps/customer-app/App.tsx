@@ -780,7 +780,7 @@ const ReserveScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
   )
 };
 
-const MyGoaScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
+const MyGoaScreen = ({ showToast, isLightMode, setIsLightMode }: { showToast: (msg: string) => void, isLightMode: boolean, setIsLightMode: (val: boolean) => void }) => {
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const toggleSection = (section: string) => {
@@ -795,6 +795,36 @@ const MyGoaScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
         return <div style={{ color: TOKENS.textSecondary, fontSize: '13px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>Last visit: Friday Noir (2 Sep 2026). Total spend: ₹42,000.</div>;
       case 'Saved Preferences':
         return <div style={{ color: TOKENS.textSecondary, fontSize: '13px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>Music: Techno, House. Table size: 4-6 guests. Zone: VIP Floor.</div>;
+      case 'Profile Settings':
+        return (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px', paddingTop: '12px', borderTop: `1px solid ${TOKENS.border}` }}>
+            <div>
+              <div style={{ color: TOKENS.textPrimary, fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>Appearance</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: TOKENS.surfaceHigh, padding: '12px', borderRadius: '8px' }}>
+                <span style={{ color: TOKENS.textSecondary, fontSize: '13px' }}>Day / Night Theme</span>
+                <button 
+                  onClick={() => setIsLightMode(!isLightMode)}
+                  style={{
+                    background: isLightMode ? TOKENS.accent : TOKENS.bg,
+                    border: `1px solid ${TOKENS.border}`,
+                    borderRadius: '16px',
+                    padding: '4px 12px',
+                    color: isLightMode ? '#000' : TOKENS.textPrimary,
+                    fontSize: '11px',
+                    fontWeight: '600',
+                    cursor: 'pointer'
+                  }}
+                >
+                  {isLightMode ? 'Day Theme' : 'Night Theme'}
+                </button>
+              </div>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: TOKENS.surfaceHigh, padding: '12px', borderRadius: '8px' }}>
+              <span style={{ color: TOKENS.textSecondary, fontSize: '13px' }}>Account Details</span>
+              <ChevronRight size={14} color={TOKENS.textSecondary} />
+            </div>
+          </div>
+        );
       case 'Rewards':
         return <RewardsScreen showToast={showToast} embedded={true} />;
       case 'Notifications':
@@ -851,7 +881,7 @@ const MyGoaScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {['Upcoming Reservations', 'Past Visits', 'Rewards', 'Saved Preferences', 'Notifications'].map(section => (
+        {['Upcoming Reservations', 'Past Visits', 'Profile Settings', 'Rewards', 'Saved Preferences', 'Notifications'].map(section => (
           <div key={section} style={{ backgroundColor: TOKENS.surface, borderRadius: '12px', border: `1px solid ${TOKENS.border}` }}>
             <div onClick={() => toggleSection(section)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', cursor: 'pointer' }}>
               <span style={{ color: TOKENS.textPrimary, fontSize: '15px' }}>{section}</span>
@@ -1017,7 +1047,7 @@ export default function App() {
       case 'home': return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} showToast={showToast} />;
       case 'reserve': return <ReserveScreen showToast={showToast} />;
       case 'social': return <SocialScreen showToast={showToast} />;
-      case 'mygoa': return <MyGoaScreen showToast={showToast} />;
+      case 'mygoa': return <MyGoaScreen showToast={showToast} isLightMode={isLightMode} setIsLightMode={setIsLightMode} />;
       case 'wallet': return <BottleWalletScreen showToast={showToast} />;
       case 'rewards': return <RewardsScreen showToast={showToast} />;
       default: return <HomeScreen nightModeActive={nightModeActive} setNightModeActive={setNightModeActive} showToast={showToast} />;
@@ -1141,30 +1171,6 @@ export default function App() {
           borderRadius: '16px',
           zIndex: 100
         }} />
-
-        {/* Theme Toggle Button */}
-        <button 
-          onClick={() => setIsLightMode(!isLightMode)}
-          style={{
-            position: 'absolute',
-            top: '12px',
-            right: '24px',
-            zIndex: 101,
-            background: TOKENS.surfaceHigh,
-            border: \`1px solid \${TOKENS.border}\`,
-            borderRadius: '20px',
-            padding: '6px 12px',
-            color: TOKENS.textPrimary,
-            fontSize: '12px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-          }}
-        >
-          {isLightMode ? 'Night Mode' : 'Day Mode'}
-        </button>
 
         {/* Global Toast Overlay */}
         {toastMsg && (
