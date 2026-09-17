@@ -57,7 +57,7 @@ const DATA = {
       caption: "Nothing hits like a Saturday at GOA 🥃🔥 Table 8 was unreal tonight.",
       filter: "GOLDEN HOUR",
       likes: 248,
-      image: "https://loremflickr.com/800/600/nightclub,crowd",
+      image: "https://picsum.photos/seed/goa_post1/800/600",
       comments: [
         { user: "Karan M.", initials: "KM", text: "Agreed 🔥 see you next week", time: "1h ago", likes: 12 },
         { user: "Dev R.", initials: "DR", text: "Table 8 gang 🙌", time: "45m ago", likes: 4 }
@@ -74,7 +74,7 @@ const DATA = {
       caption: "DJ KSHMR absolutely destroyed it. Requesting the same set every week 🎧",
       filter: "DJ MODE",
       likes: 412,
-      image: "https://loremflickr.com/800/600/dj,concert",
+      image: "https://picsum.photos/seed/goa_post2/800/600",
       comments: [
         { user: "Priya S.", initials: "PS", text: "That drop at 1am 😭", time: "3h ago", likes: 28 }
       ],
@@ -90,7 +90,7 @@ const DATA = {
       caption: "Bottle drop for the crew 🍾 See you next Saturday.",
       filter: "BOTTLE DROP",
       likes: 189,
-      image: "https://loremflickr.com/800/600/champagne,bottle",
+      image: "https://picsum.photos/seed/goa_post3/800/600",
       comments: [
         { user: "Rahul K.", initials: "RK", text: "Carry me next time 😂", time: "5h ago", likes: 7 }
       ],
@@ -106,7 +106,7 @@ const DATA = {
       caption: "Trying out the new signature cocktails at the bar. 🍸 Absolutely phenomenal.",
       filter: "NIGHT MODE",
       likes: 134,
-      image: "https://loremflickr.com/800/600/bar,cocktail",
+      image: "https://picsum.photos/seed/goa_post4/800/600",
       comments: [],
       liked: false,
       saved: true
@@ -120,7 +120,7 @@ const DATA = {
       caption: "GOA never disappoints. The energy here is unmatched.",
       filter: "GOA MEMORIES",
       likes: 520,
-      image: "https://loremflickr.com/800/600/party,friends",
+      image: "https://picsum.photos/seed/bar_static/800/600",
       comments: [
         { user: "Meera R.", initials: "MR", text: "Best night ever!", time: "12h ago", likes: 18 }
       ],
@@ -286,7 +286,7 @@ const SocialScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
       case 'BOTTLE DROP':
         return { background: `rgba(200,169,110,0.12)` };
       case 'GOA MEMORIES':
-        return { filter: 'sepia(0.4) contrast(1.1)', backgroundColor: '#3A3020' }; // slight bg for placeholder
+        return { backgroundColor: 'rgba(58, 48, 32, 0.4)', backdropFilter: 'sepia(0.4) contrast(1.1)' };
       case 'INSIDER':
         return {};
       default:
@@ -712,7 +712,7 @@ const HomeScreen = ({ nightModeActive, setNightModeActive, showToast }: { nightM
           <p style={{ color: TOKENS.textSecondary, fontSize: '14px', marginBottom: '32px', textAlign: 'center' }}>{DATA.upcomingReservation.event}</p>
           
           <div style={{ backgroundColor: '#FFF', padding: '16px', borderRadius: '16px', marginBottom: '24px' }}>
-            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${DATA.user.goaId}`} alt="QR Code" style={{ width: '200px', height: '200px' }} />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" alt="QR Code" style={{ width: '200px', height: '200px' }} />
           </div>
           
           <div style={{ color: TOKENS.accent, fontSize: '16px', fontWeight: '500', letterSpacing: '2px' }}>{DATA.user.goaId}</div>
