@@ -1022,15 +1022,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      backgroundColor: '#000', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      fontFamily: 'Inter, sans-serif',
-      padding: '40px'
-    }}>
+    <div className="min-h-screen bg-black flex items-center justify-center font-['Inter',sans-serif] p-0 sm:p-10">
       <style>
         {`
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
