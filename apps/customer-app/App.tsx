@@ -330,7 +330,7 @@ const SocialScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
 
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {/* Stories Row */}
-        <div style={{ display: 'flex', gap: '16px', padding: '0 24px 24px 24px', overflowX: 'auto', scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', gap: '16px', padding: '0 20px 20px 20px', overflowX: 'auto', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch', width: '100%', boxSizing: 'border-box' }}>
           {DATA.stories.map((story, i) => (
             <div key={i} onClick={() => !story.isOwn && showToast(`Viewing ${story.name}'s story`)} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer', flexShrink: 0 }}>
               <div style={{
@@ -529,7 +529,7 @@ const SocialScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
             <button onClick={() => setCommentSheetOpen(false)} style={{ background: 'none', border: 'none', color: TOKENS.textSecondary, cursor: 'pointer' }}><X size={20} /></button>
           </div>
           
-          <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px', width: '100%', maxWidth: '390px', overflowX: 'hidden', boxSizing: 'border-box' }}>
              {/* Original Caption */}
              <div style={{ display: 'flex', gap: '12px', marginBottom: '8px' }}>
                 <Avatar initials={activePost.initials} size={32} />
@@ -637,8 +637,8 @@ const HomeScreen = ({ nightModeActive, setNightModeActive, showToast, setActiveT
 
   return (
     <div style={{ flex: 1, position: 'relative' }}>
-      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '24px', height: '100%' }}>
-        <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative' }}>
+      <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '20px', height: '100%', width: '100%', maxWidth: '390px', overflowX: 'hidden', boxSizing: 'border-box' }}>
+        <div style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', boxSizing: 'border-box' }}>
           <div style={{ width: '32px' }} />
           <div style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
             <h1 style={{ fontFamily: "'Pacifico', cursive", fontSize: '22px', fontWeight: '400', color: TOKENS.textPrimary, margin: 0, letterSpacing: '1px' }}>GOA</h1>
@@ -654,14 +654,14 @@ const HomeScreen = ({ nightModeActive, setNightModeActive, showToast, setActiveT
           </div>
         </div>
 
-        <div style={{ padding: '0 24px' }}>
+        <div style={{ padding: '0 20px', boxSizing: 'border-box' }}>
           <div style={{ fontSize: '20px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '4px' }}>
             Good evening, {DATA.user.name.split(' ')[0]}
           </div>
           <TierBadge tier={DATA.user.tier} />
         </div>
 
-        <div style={{ padding: '24px' }}>
+        <div style={{ padding: '20px', boxSizing: 'border-box' }}>
           <Card style={{ position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: `linear-gradient(90deg, ${TOKENS.accent}, transparent)` }} />
             <div style={{ color: TOKENS.textSecondary, fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '8px' }}>Next Reservation</div>
@@ -673,9 +673,9 @@ const HomeScreen = ({ nightModeActive, setNightModeActive, showToast, setActiveT
           </Card>
         </div>
 
-        <div style={{ padding: '0 0 24px 24px' }}>
+        <div style={{ padding: '0 0 20px 20px', boxSizing: 'border-box', width: '100%', overflow: 'hidden' }}>
           <div style={{ fontSize: '16px', color: TOKENS.textPrimary, fontWeight: '500', marginBottom: '16px' }}>Happening This Week</div>
-          <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', paddingRight: '24px', scrollbarWidth: 'none' }}>
+          <div style={{ display: 'flex', gap: '16px', overflowX: 'auto', overflowY: 'hidden', paddingRight: '20px', scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
             {DATA.events.map((event, i) => (
               <Card key={i} style={{ minWidth: '240px', flexShrink: 0, padding: 0, overflow: 'hidden' }}>
                 <div style={{ height: '120px', backgroundColor: TOKENS.surfaceHigh, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -731,7 +731,7 @@ const ReserveScreen = ({ showToast }: { showToast: (msg: string) => void }) => {
   const filteredEvents = DATA.events.filter(e => activeFilter === 'All' || e.category === activeFilter || (activeFilter === 'Weekend' && e.date.includes('Sep')));
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '20px', width: '100%', maxWidth: '390px', overflowX: 'hidden', boxSizing: 'border-box' }}>
       <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '24px', marginTop: 0 }}>Reservations</h2>
       
       <div style={{ display: 'flex', gap: '12px', marginBottom: '24px', overflowX: 'auto', scrollbarWidth: 'none', paddingBottom: '8px' }}>
@@ -846,7 +846,7 @@ const MyGoaScreen = ({ showToast, isLightMode, setIsLightMode }: { showToast: (m
   };
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '20px', width: '100%', maxWidth: '390px', overflowX: 'hidden', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '32px', marginTop: '16px' }}>
         <div style={{ width: '80px', height: '80px', borderRadius: '40px', backgroundColor: TOKENS.surfaceHigh, border: `2px solid ${TOKENS.accent}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', color: TOKENS.accent, marginBottom: '16px' }}>
           {DATA.user.name.split(' ').map(n => n[0]).join('')}
@@ -909,7 +909,7 @@ const BottleWalletScreen = ({ showToast }: { showToast: (msg: string) => void })
   };
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+    <div style={{ flex: 1, overflowY: 'auto', padding: '20px', width: '100%', maxWidth: '390px', overflowX: 'hidden', boxSizing: 'border-box' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', margin: 0 }}>My Bottles</h2>
         <Button variant="ghost" style={{ padding: '6px 12px', fontSize: '14px' }} onClick={() => showToast("Only staff can add new bottles to your wallet.")}>
@@ -966,7 +966,7 @@ const RewardsScreen = ({ showToast, embedded }: { showToast: (msg: string) => vo
   };
 
   return (
-    <div style={{ flex: embedded ? undefined : 1, overflowY: embedded ? undefined : 'auto', padding: embedded ? '0px' : '24px' }}>
+    <div style={{ flex: embedded ? undefined : 1, overflowY: embedded ? undefined : 'auto', padding: embedded ? '0px' : '20px', width: '100%', maxWidth: '390px', overflowX: 'hidden', boxSizing: 'border-box' }}>
       {!embedded && <h2 style={{ fontSize: '24px', color: TOKENS.textPrimary, fontWeight: '300', marginBottom: '24px', marginTop: 0 }}>Rewards</h2>}
 
       <Card style={{ 
@@ -1135,16 +1135,29 @@ export default function App() {
 
           /* Mobile Breakpoint overrides */
           @media (max-width: 640px) {
+            body {
+              overflow-x: hidden;
+              position: fixed;
+              width: 100%;
+              height: 100%;
+            }
             .app-wrapper {
               padding: 0;
-              align-items: stretch;
+              width: 390px;
+              min-width: 390px;
+              max-width: 390px;
+              overflow-x: hidden;
+              position: relative;
+              margin: 0 auto;
             }
             .device-frame {
-              width: 100vw !important;
+              width: 100% !important;
+              max-width: 390px !important;
               height: 100dvh !important;
-              max-width: 100vw;
               border-radius: 0;
               box-shadow: none;
+              overflow-x: hidden;
+              box-sizing: border-box;
             }
             .notch {
               display: none !important;
@@ -1205,7 +1218,7 @@ export default function App() {
         <div className="status-bar-space" />
 
         {!isAuthenticated ? (
-          <div style={{ flex: 1, padding: '32px 24px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ flex: 1, padding: '32px 20px', display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box', width: '100%', maxWidth: '390px', overflowX: 'hidden' }}>
             <div style={{ textAlign: 'center', margin: '0 0 40px 0', animation: 'fadeIn 0.8s ease-out' }}>
               <h1 style={{ fontFamily: "'Pacifico', cursive", fontSize: '48px', fontWeight: '400', letterSpacing: '8px', color: TOKENS.accent, margin: '0 0 8px 0' }}>GOA</h1>
               <p style={{ color: TOKENS.textSecondary, fontSize: '12px', letterSpacing: '2px', margin: 0 }}>NIGHTCLUB</p>
